@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SwiftBets.Notifications.Api/SwiftBets.Notifications.Api.csproj" />
+    <Project Path="src/SwiftBets.Notifications.Application/SwiftBets.Notifications.Application.csproj" />
+    <Project Path="src/SwiftBets.Notifications.Domain/SwiftBets.Notifications.Domain.csproj" />
+    <Project Path="src/SwiftBets.Notifications.Infrastructure/SwiftBets.Notifications.Infrastructure.csproj" />
+    <Project Path="src/SwiftBets.Notifications.Migrator/SwiftBets.Notifications.Migrator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SwiftBets.Notifications.Application.Tests/SwiftBets.Notifications.Application.Tests.csproj" />
+    <Project Path="tests/SwiftBets.Notifications.IntegrationTests/SwiftBets.Notifications.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
