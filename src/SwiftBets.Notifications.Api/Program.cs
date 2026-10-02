@@ -25,6 +25,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapSwiftBetsOperationalEndpoints();
 app.MapNotificationEndpoints();
+app.MapCustomerEndpoints();
 
 await app.RunAsync();
 return 0;

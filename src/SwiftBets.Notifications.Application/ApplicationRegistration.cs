@@ -9,6 +9,7 @@ public static class ApplicationRegistration
     {
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<SendNotificationHandler>();
+        services.AddScoped<CustomerEventHandler>();
         return services;
     }
 }
