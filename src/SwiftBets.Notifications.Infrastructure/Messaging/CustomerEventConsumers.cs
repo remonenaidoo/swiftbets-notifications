@@ -24,7 +24,7 @@ public sealed class CouponSettledConsumer(CustomerEventHandler handler) : IEvent
         ArgumentNullException.ThrowIfNull(message);
         var p = message.Envelope.Payload;
         return handler.HandleAsync(CustomerEvent.BetSettled, $"settled|{p.CouponId}|{p.SettlementVersion}", p.PunterId,
-            new Dictionary<string, string> { ["outcome"] = p.Outcome.ToString(), ["stake"] = Format.Rand(p.TotalStake), ["payout"] = Format.Rand(p.TargetPayout) }, cancellationToken);
+            new Dictionary<string, string> { ["outcome"] = p.Outcome.ToString(), ["stake"] = Format.Rand(p.TotalStake), ["payout"] = Format.Rand(p.TargetPayout) }, p.SettledAt, cancellationToken);
     }
 }
 
@@ -34,7 +34,7 @@ public sealed class DepositSucceededConsumer(CustomerEventHandler handler) : IEv
     {
         ArgumentNullException.ThrowIfNull(message);
         var p = message.Envelope.Payload;
-        return handler.HandleAsync(CustomerEvent.DepositConfirmed, $"deposit|{p.PaymentId}", p.UserId, new Dictionary<string, string> { ["amount"] = Format.Rand(p.Amount) }, cancellationToken);
+        return handler.HandleAsync(CustomerEvent.DepositConfirmed, $"deposit|{p.PaymentId}", p.UserId, new Dictionary<string, string> { ["amount"] = Format.Rand(p.Amount) }, p.CompletedAt, cancellationToken);
     }
 }
 
@@ -51,7 +51,7 @@ public sealed class LimitReachedConsumer(CustomerEventHandler handler) : IEventH
             ["period"] = p.Period switch { LimitPeriod.Day => "daily", LimitPeriod.Week => "weekly", _ => "monthly" },
             ["refused"] = p.Refused,
             ["attempted"] = Format.Rand(p.Attempted),
-        }, cancellationToken);
+        }, p.ReachedAt, cancellationToken);
     }
 }
 
@@ -65,6 +65,6 @@ public sealed class SelfExclusionStartedConsumer(CustomerEventHandler handler) :
         {
             ["kind"] = p.Kind == RestrictionKind.CoolingOff ? "cooling-off break" : "self-exclusion",
             ["until"] = p.EndsAt?.ToString("d MMMM yyyy", CultureInfo.GetCultureInfo("en-ZA")) ?? string.Empty,
-        }, cancellationToken);
+        }, p.StartsAt, cancellationToken);
     }
 }

@@ -14,10 +14,12 @@ public sealed class CustomerEventHandlerTests
     {
         var (handler, inbox, email, _) = Build();
 
-        await handler.HandleAsync(CustomerEvent.BetSettled, "settled|c-1|1", Customer, Won, CancellationToken.None);
-        await handler.HandleAsync(CustomerEvent.BetSettled, "settled|c-1|1", Customer, Won, CancellationToken.None);
+        var settledAt = new DateTimeOffset(2026, 10, 1, 18, 30, 0, TimeSpan.Zero);
+        await handler.HandleAsync(CustomerEvent.BetSettled, "settled|c-1|1", Customer, Won, settledAt, CancellationToken.None);
+        await handler.HandleAsync(CustomerEvent.BetSettled, "settled|c-1|1", Customer, Won, settledAt, CancellationToken.None);
 
-        inbox.Items.ShouldHaveSingleItem().Title.ShouldBe("Your bet won");
+        var item = inbox.Items.ShouldHaveSingleItem();
+        (item.Title, item.CreatedAt).ShouldBe(("Your bet won", settledAt));
         email.Sent.ShouldHaveSingleItem().To.ShouldBe("punter@example.com");
     }
 
@@ -28,10 +30,10 @@ public sealed class CustomerEventHandlerTests
         await preferences.SetAsync(Customer, CustomerEvent.BetSettled, new ChannelPreference(Email: false, InApp: true), CancellationToken.None);
         await preferences.SetAsync(Customer, CustomerEvent.SelfExclusionConfirmed, new ChannelPreference(Email: false, InApp: false), CancellationToken.None);
 
-        await handler.HandleAsync(CustomerEvent.BetSettled, "settled|c-2|1", Customer, Won, CancellationToken.None);
+        await handler.HandleAsync(CustomerEvent.BetSettled, "settled|c-2|1", Customer, Won, DateTimeOffset.UtcNow, CancellationToken.None);
         email.Sent.ShouldBeEmpty();
 
-        await handler.HandleAsync(CustomerEvent.SelfExclusionConfirmed, "exclusion|x", Customer, new Dictionary<string, string> { ["kind"] = "self-exclusion" }, CancellationToken.None);
+        await handler.HandleAsync(CustomerEvent.SelfExclusionConfirmed, "exclusion|x", Customer, new Dictionary<string, string> { ["kind"] = "self-exclusion" }, DateTimeOffset.UtcNow, CancellationToken.None);
         email.Sent.ShouldHaveSingleItem().Email.Subject.ShouldBe("Your break has started");
         inbox.Items.Count.ShouldBe(2);
     }

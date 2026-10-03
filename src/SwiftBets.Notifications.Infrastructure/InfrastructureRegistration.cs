@@ -44,12 +44,13 @@ public static class InfrastructureRegistration
         services.AddKafkaMessaging(configuration);
         services.AddKafkaConsumer<NotificationRequestedV1, NotificationRequestedConsumer>(Topics.NotificationRequested, SenderGroup);
         services.AddKafkaConsumer<AccountStatusChangedV1, AccountStatusChangedConsumer>(Topics.AccountStatusChanged, AccountStatusGroup);
+        // A new consumer starts at the newest event: customers are told about what happens from now on, never the backlog.
         if (configuration.GetValue("Notifications:CustomerEvents", true))
         {
-            services.AddKafkaConsumer<CouponSettledV2, CouponSettledConsumer>(Topics.CouponSettledV2, "notifications.bet-settled");
-            services.AddKafkaConsumer<DepositSucceededV1, DepositSucceededConsumer>(Topics.DepositSucceeded, "notifications.deposit-confirmed");
-            services.AddKafkaConsumer<LimitReachedV1, LimitReachedConsumer>(Topics.LimitReached, "notifications.limit-reached");
-            services.AddKafkaConsumer<SelfExclusionStartedV1, SelfExclusionStartedConsumer>(Topics.SelfExclusionStarted, "notifications.self-exclusion");
+            services.AddKafkaConsumer<CouponSettledV2, CouponSettledConsumer>(Topics.CouponSettledV2, "notifications.bet-settled", startAtLatest: true);
+            services.AddKafkaConsumer<DepositSucceededV1, DepositSucceededConsumer>(Topics.DepositSucceeded, "notifications.deposit-confirmed", startAtLatest: true);
+            services.AddKafkaConsumer<LimitReachedV1, LimitReachedConsumer>(Topics.LimitReached, "notifications.limit-reached", startAtLatest: true);
+            services.AddKafkaConsumer<SelfExclusionStartedV1, SelfExclusionStartedConsumer>(Topics.SelfExclusionStarted, "notifications.self-exclusion", startAtLatest: true);
         }
         return services;
     }
