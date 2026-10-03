@@ -6,7 +6,11 @@ using SwiftBets.Notifications.Application.Ports;
 
 namespace SwiftBets.Notifications.Infrastructure.Identity;
 
-/// <summary>Asks identity where to email a customer, with a service token; nothing about the address is kept here.</summary>
+/// <summary>
+/// Asks identity where to email a customer, with a service token; nothing about the address is kept here. A suspended or
+/// self-excluded account is still written to: these are service messages, and a break must be confirmed. Marketing is
+/// filtered separately. Only a closed account is not.
+/// </summary>
 public sealed class IdentityContactDirectory(HttpClient http, ClientCredentialsTokenProvider tokens) : IContactDirectory
 {
     public async Task<string?> EmailAsync(Guid userId, CancellationToken cancellationToken)
@@ -27,7 +31,7 @@ public sealed class IdentityContactDirectory(HttpClient http, ClientCredentialsT
 
         response.EnsureSuccessStatusCode();
         var contact = await response.Content.ReadFromJsonAsync<Contact>(cancellationToken).ConfigureAwait(false);
-        return contact?.Email is { Length: > 0 } email && contact.Status == "Active" ? email : null;
+        return contact?.Email is { Length: > 0 } email && contact.Status != "Closed" ? email : null;
     }
 
     private sealed record Contact(string? Email, bool EmailVerified, string Status);
