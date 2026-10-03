@@ -87,6 +87,10 @@ internal sealed class NotificationsHost : WebApplicationFactory<Program>
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:SbNotifications", ConnectionString);
         builder.UseSetting("Kafka:BootstrapServers", Bootstrap);
+        builder.UseSetting("ServiceIdentity:TokenEndpoint", "http://127.0.0.1:9/auth/token");
+        builder.UseSetting("ServiceIdentity:ClientId", "notifications");
+        builder.UseSetting("ServiceIdentity:ClientSecret", "test");
+        builder.UseSetting("Notifications:CustomerEvents", "false");
         builder.UseSetting("Kafka:Environment", Environment);
         builder.UseSetting("Kafka:ClientId", "notifications-tests");
         builder.UseSetting("Email:SmtpHost", "127.0.0.1");

@@ -74,7 +74,7 @@ public sealed class NotificationFlowTests(PostgresFixture postgres, RedpandaFixt
         (await NotificationsHost.MigrateAsync(host.ConnectionString, "--Migrator:RollbackTo=0")).ShouldBe(0);
         (await TablesAsync(host)).ShouldBe(0);
         (await NotificationsHost.MigrateAsync(host.ConnectionString)).ShouldBe(0);
-        (await TablesAsync(host)).ShouldBe(2);
+        (await TablesAsync(host)).ShouldBe(4);
     }
 
     [Fact]

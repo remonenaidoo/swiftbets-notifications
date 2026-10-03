@@ -10,6 +10,7 @@
     <PackageReference Include="Dapper" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="Npgsql" />
+    <PackageReference Include="SwiftBets.BuildingBlocks.Web" />
     <ProjectReference Include="../SwiftBets.Notifications.Application/SwiftBets.Notifications.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
