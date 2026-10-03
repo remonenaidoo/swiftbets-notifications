@@ -13,7 +13,7 @@ namespace SwiftBets.Notifications.Application;
 /// </summary>
 public sealed class CustomerEventHandler(ICustomerInbox inbox, IInboxPublisher publisher, IPreferenceStore preferences, IContactDirectory contacts, IDeliveryStore deliveries, IEmailSender email, TimeProvider time)
 {
-    public async Task HandleAsync(CustomerEvent kind, string eventKey, Guid userId, IReadOnlyDictionary<string, string> data, CancellationToken cancellationToken)
+    public async Task HandleAsync(CustomerEvent kind, string eventKey, Guid userId, IReadOnlyDictionary<string, string> data, DateTimeOffset occurredAt, CancellationToken cancellationToken)
     {
         var chosen = (await preferences.GetAsync(userId, cancellationToken).ConfigureAwait(false)).GetValueOrDefault(kind);
         var channels = CustomerEventPolicy.Channels(kind, chosen);
@@ -22,7 +22,7 @@ public sealed class CustomerEventHandler(ICustomerInbox inbox, IInboxPublisher p
 
         if (channels.InApp)
         {
-            var item = new InboxItem(DerivedId(eventKey, "inbox"), userId, Category(kind), title, body, now, null);
+            var item = new InboxItem(DerivedId(eventKey, "inbox"), userId, Category(kind), title, body, occurredAt, null);
             if (await inbox.AddAsync(item, cancellationToken).ConfigureAwait(false))
             {
                 await publisher.PublishAsync(item, cancellationToken).ConfigureAwait(false);
